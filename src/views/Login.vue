@@ -50,6 +50,14 @@ import { request } from '@/network/request';
                 }
             }
         },
+        mounted(){
+            document.onkeydown = e => {
+                // 按下的是回车键
+                if(e.keyCode === 13){
+                   this.login() //调用点击按钮登录的事件
+                }
+            }
+        },
         methods: {
             // 点击重置按钮，重置登录表单
             resetLoginForm() {

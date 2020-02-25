@@ -12,7 +12,16 @@ const routes = [ // 定义路由规则
     path: '/login', component: () => import ('@/views/Login.vue')  // 登录组件
   },
   {
-    path: '/home', component: () => import ('@/views/Home.vue') // 主页组件
+    path: '/home', component: () => import ('@/views/Home.vue'), // 主页组件
+    redirect: '/welcome',
+    children: [
+      {
+        path: '/welcome', component: () => import ('@/views/Home/Welcome.vue') //欢迎页组件
+      },
+      {
+        path: '/users', component: () => import ('@/views/Home/Users.vue') //用户列表组件
+      }
+    ]
   }
 ]
 
