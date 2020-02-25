@@ -69,7 +69,7 @@
     </el-card>
 
     <!-- 添加用户的对话框 -->
-    <el-dialog title="添加用户" :visible.sync="addDialogVisible" width="432px" class="dialog">
+    <el-dialog title="添加用户" :visible.sync="addDialogVisible" width="432px" @close='addDialogClosed'>
       <!-- 内容主体区域 -->
       <el-form
         :model="addForm"
@@ -110,7 +110,7 @@ import { request } from "@/network/request";
 export default {
   data() {
     const checkPhone = (rule, value, callback) => {
-        const reg = /^1[3|4|5|7|8][0-9]\d{8}$/
+        const reg = /^[1](([3][0-9])|([4][5-9])|([5][0-3,5-9])|([6][5,6])|([7][0-8])|([8][0-9])|([9][1,8,9]))[0-9]{8}$/
         if (reg.test(value)) {
           callback();
         } else {
@@ -141,15 +141,15 @@ export default {
       // 添加表单的验证规则对象
       addFormRules: {
         username: [
-          { required: true, message: '请输入用户名', trigger: 'blur' },
+          { required: true, message: '用户名不能为空', trigger: 'blur' },
           { min: 3, max: 10, message: '用户名长度应为3-10个字符',trigger: 'blur' }
         ],
         password: [
-          { required: true, message: '请输入密码', trigger: 'blur' },
+          { required: true, message: '密码不能为空', trigger: 'blur' },
           { min: 6, max: 15, message: '密码长度应为6-15个字符',trigger: 'blur' }
         ],
         mobile: [
-          { required: true, message: '请输入手机号', trigger: 'blur' },
+          { required: true, message: '手机号不能为空', trigger: 'blur' },
           { validator: checkPhone, message: '请输入正确的手机号',trigger: 'blur' }
         ],
         email: [
@@ -195,6 +195,10 @@ export default {
       if (value === "") {
         this.getUserList();
       }
+    },
+    // 监听添加用户对话框的关闭事件
+    addDialogClosed() {
+      this.$refs.addFormRef.resetFields()
     }
   }
 };
