@@ -98,7 +98,7 @@
       </el-form>
       <!-- 底部区域 -->
       <span slot="footer" >
-        <el-button type="primary" @click="addDialogVisible = false">确 定</el-button>
+        <el-button type="primary" @click="addUser">确 定</el-button>
         <el-button @click="addDialogVisible = false">取 消</el-button>
       </span>
     </el-dialog>
@@ -109,6 +109,7 @@
 import { request } from "@/network/request";
 export default {
   data() {
+    // 自定义手机号验证方式
     const checkPhone = (rule, value, callback) => {
         const reg = /^[1](([3][0-9])|([4][5-9])|([5][0-3,5-9])|([6][5,6])|([7][0-8])|([8][0-9])|([9][1,8,9]))[0-9]{8}$/
         if (reg.test(value)) {
@@ -199,6 +200,24 @@ export default {
     // 监听添加用户对话框的关闭事件
     addDialogClosed() {
       this.$refs.addFormRef.resetFields()
+    },
+    // 点击按钮，添加新用户
+    addUser() {
+      this.$refs.addFormRef.validate(async vaild => {
+        if (!vaild) return 
+        // 可以发起添加用户的网络请求
+        const { data: res } = await request({
+          url: "/users",
+          method: "post",
+          data: this.addForm
+        });
+        if (res.meta.code !== 201) return this.$message.error(res.meta.msg);
+        this.$message.success(res.meta.msg)
+        // 关闭弹出框
+        this.addDialogVisible = false
+        // 重新获取页面数据
+        this.getUserList()
+      })
     }
   }
 };
