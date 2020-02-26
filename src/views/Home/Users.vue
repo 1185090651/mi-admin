@@ -42,10 +42,9 @@
           </template>
         </el-table-column>
         <el-table-column label="操作" width="180px">
-          <!-- <template v-slot="scope"> -->
-          <template>
+          <template v-slot="scope">
             <!-- 修改按钮 -->
-            <el-button type="primary" icon="el-icon-edit" size="mini"></el-button>
+            <el-button type="primary" icon="el-icon-edit" size="mini" @click="showEditDialog(scope.row.id)"></el-button>
             <!-- 删除按钮 -->
             <el-button type="danger" icon="el-icon-delete" size="mini"></el-button>
             <!-- 分配角色按钮 -->
@@ -73,7 +72,7 @@
       <!-- 内容主体区域 -->
       <el-form
         :model="addForm"
-        :rules="addFormRules"
+        :rules="userFormRules"
         ref="addFormRef"
         label-width="70px"
         hide-required-asterisk>
@@ -100,6 +99,32 @@
       <span slot="footer" >
         <el-button type="primary" @click="addUser">确 定</el-button>
         <el-button @click="addDialogVisible = false">取 消</el-button>
+      </span>
+    </el-dialog>
+
+    <!-- 修改用户的对话框 -->
+    <el-dialog title="修改用户" :visible.sync="editDialogVisible" width="432px" @close='editDialogClosed'>
+      <!-- 内容主体区域 -->
+      <el-form
+        :model="editForm"
+        :rules="userFormRules"
+        ref="editFormRef"
+        label-width="70px"
+        hide-required-asterisk>
+        <el-form-item label="用户名" prop="username">
+          <el-input v-model="editForm.username" disabled></el-input>
+        </el-form-item>
+        <el-form-item label="手机号" prop="mobile">
+          <el-input v-model="editForm.mobile"></el-input>
+        </el-form-item>
+        <el-form-item label="邮　箱" prop="email">
+          <el-input v-model="editForm.email"></el-input>
+        </el-form-item>
+      </el-form>
+      <!-- 底部区域 -->
+      <span slot="footer" >
+        <el-button type="primary" @click="editUser">确 定</el-button>
+        <el-button @click="editDialogVisible = false">取 消</el-button>
       </span>
     </el-dialog>
   </div>
@@ -139,8 +164,10 @@ export default {
         email: '',
         rid: '用　户'
       },
+      // 修改用户的表单数据
+      editForm: {},
       // 添加表单的验证规则对象
-      addFormRules: {
+      userFormRules: {
         username: [
           { required: true, message: '用户名不能为空', trigger: 'blur' },
           { min: 3, max: 10, message: '用户名长度应为3-10个字符',trigger: 'blur' }
@@ -156,7 +183,9 @@ export default {
         email: [
           { type: 'email', message: '请输入正确的邮箱地址', trigger: 'blur' }
         ]
-      }
+      },
+      // 控制修改用户对话框的显示与隐藏
+      editDialogVisible: false,
     };
   },
   created() {
@@ -201,10 +230,14 @@ export default {
     addDialogClosed() {
       this.$refs.addFormRef.resetFields()
     },
+    // 监听修改用户对话框的关闭事件
+    editDialogClosed() {
+      this.$refs.editFormRef.resetFields()
+    },
     // 点击按钮，添加新用户
     addUser() {
       this.$refs.addFormRef.validate(async vaild => {
-        if (!vaild) return 
+        if (!vaild) return this.$message.error("请输入正确的信息")
         // 可以发起添加用户的网络请求
         const { data: res } = await request({
           url: "/users",
@@ -217,6 +250,37 @@ export default {
         this.addDialogVisible = false
         // 重新获取页面数据
         this.getUserList()
+      })
+    },
+    // 点击修改按钮，显示修改用户对话框
+    async showEditDialog(id) {
+      // 向后台发送请求根据id拿到该条数据
+      const { data: res } = await request({
+         url: "/edit",
+         method: "get",
+         params: {id}
+      });
+      if (res.meta.code !== 201) return this.$message.error(res.meta.msg);
+      this.editForm = res.data
+      // 显示修改用户对话框
+      this.editDialogVisible = true
+    },
+    // 发送已经修改好的用户信息
+    editUser() {
+      this.$refs.editFormRef.validate(async vaild => {
+        if (!vaild) return this.$message.error("请输入正确的修改信息")
+        // 发起修改信息的网络请求
+        const { data: res } = await request({
+          url: "/edit",
+          method: "post",
+          data: this.editForm
+        });
+        if (res.meta.code !== 201) return this.$message.error(res.meta.msg);
+        this.$message.success(res.meta.msg)
+        // 重新请求数据
+        this.getUserList()
+        // 关闭弹出框
+        this.editDialogVisible = false
       })
     }
   }
