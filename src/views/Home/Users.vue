@@ -6,6 +6,7 @@
       <el-breadcrumb-item>用户管理</el-breadcrumb-item>
       <el-breadcrumb-item>用户列表</el-breadcrumb-item>
     </el-breadcrumb>
+
     <!-- 卡片视图区域 -->
     <el-card class="box-card">
       <!-- 搜索与添加区域 -->
@@ -46,10 +47,10 @@
             <!-- 修改按钮 -->
             <el-button type="primary" icon="el-icon-edit" size="mini" @click="showEditDialog(scope.row.id)"></el-button>
             <!-- 删除按钮 -->
-            <el-button type="danger" icon="el-icon-delete" size="mini"></el-button>
+            <el-button type="danger" icon="el-icon-delete" size="mini" @click="removeUserById(scope.row.id)"></el-button>
             <!-- 分配角色按钮 -->
             <el-tooltip effect="dark" content="分配角色" placement="top" :enterable="false">
-              <el-button type="warning" icon="el-icon-setting" size="mini"></el-button>
+              <el-button type="warning" icon="el-icon-setting" size="mini" @click="changeRoleById(scope.row)"></el-button>
             </el-tooltip>
           </template>
         </el-table-column>
@@ -64,6 +65,7 @@
         :page-size="queryInfo.pagesize"
         layout="total, sizes, prev, pager, next, jumper"
         :total="total"
+        hide-on-single-page
       ></el-pagination>
     </el-card>
 
@@ -127,6 +129,38 @@
         <el-button @click="editDialogVisible = false">取 消</el-button>
       </span>
     </el-dialog>
+
+     <!-- 分配权限的对话框 -->
+    <el-dialog title="分配角色" :visible.sync="changeRoleDialog" width="432px" @close='changeRolesClosed'>
+      <!-- 内容主体区域 -->
+      <el-form
+        :model="changeRoleForm"
+        label-width="120px"
+        hide-required-asterisk>
+        <el-form-item label="当前用户名">
+          {{ changeRoleForm.username }}
+        </el-form-item>
+        <el-form-item label="当前的角色">
+          {{ changeRoleForm.rid | roleFormat }}
+        </el-form-item>
+        <el-form-item label="分配新角色">
+          <el-select v-model="currentRole" placeholder="请选择">
+            <el-option
+              v-for="item in roles"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value">
+            </el-option>
+          </el-select>
+        </el-form-item>
+      </el-form>
+      <!-- 底部区域 -->
+      <span slot="footer" >
+        <el-button type="primary" @click="changeRid">确 定</el-button>
+        <el-button @click="changeRoleDialog = false">取 消</el-button>
+      </span>
+    </el-dialog>
+
   </div>
 </template>
 
@@ -166,6 +200,8 @@ export default {
       },
       // 修改用户的表单数据
       editForm: {},
+      // 分配角色的表单数据
+      changeRoleForm: {},
       // 添加表单的验证规则对象
       userFormRules: {
         username: [
@@ -186,14 +222,43 @@ export default {
       },
       // 控制修改用户对话框的显示与隐藏
       editDialogVisible: false,
+      // 控制分配角色对话框的显示与隐藏
+      changeRoleDialog: false,
+      // 分配角色选择器
+      roles: [{
+          value: 0,
+          label: '用户'
+        }, {
+          value: 1,
+          label: '管理员'
+      }],
+      // 选择器的value
+      currentRole: '',
+      // 当前分配的角色
+      resetRole:''
     };
   },
   created() {
     this.getUserList();
   },
   methods: {
+    // 封装一个等待函数，模拟网络请求时间
+    setTimeout() {
+      return new Promise((res, rej) => {
+        setTimeout(() => {
+          res()
+        },500)
+      })
+    },
     // 请求用户列表数据
     async getUserList() {
+      const loading = this.$loading({
+          lock: true,
+          target: '.el-table',
+          background: 'rgba(0, 0, 0, 0.01)',
+          body: true
+      });
+      await this.setTimeout()
       const { data: res } = await request({
         url: "/users",
         method: "get",
@@ -204,21 +269,22 @@ export default {
       }
       this.userList = res.data.users;
       this.total = res.data.total;
+      loading.close()
     },
     // 监听pagesize的改动
     handleSizeChange(newSize) {
       this.queryInfo.pagesize = newSize;
-      this.getUserList();
+      this.getUserList(); 
     },
     // 监听页码值的改动
     handleCurrentChange(newPage) {
       this.queryInfo.pagenum = newPage;
-      this.getUserList();
+      this.getUserList(); 
     },
     // 模糊搜索用户
     getLikeUser() {
       this.queryInfo.pagenum = 1;
-      this.getUserList();
+      this.getUserList(); 
     },
     // 输入框值为空时，获取全部数据
     changeInput(value) {
@@ -233,6 +299,11 @@ export default {
     // 监听修改用户对话框的关闭事件
     editDialogClosed() {
       this.$refs.editFormRef.resetFields()
+    },
+    // 监听分配角色对话框的关闭事件
+    changeRolesClosed() {
+      this.currentRole = ''
+      this.changeRoleForm.rid = this.resetRole
     },
     // 点击按钮，添加新用户
     addUser() {
@@ -282,6 +353,61 @@ export default {
         // 关闭弹出框
         this.editDialogVisible = false
       })
+    },
+    // 发送删除用户的请求
+    async removeUserById(id) {
+      // 发送验证用户权限的请求
+      const { data: vaild } = await request({
+        url: `/verify/${id}`,
+        method: 'get',
+      });
+      // 权限不够或者是当前用户
+      if (vaild.meta.code !== 200) return this.$message.error(vaild.meta.msg)
+      // 弹框询问是否删除
+      const confirmResult = await this.$confirm('此操作将永久删除该用户, 是否继续?', '提示', {
+          cancelButtonClass: 'btn-cancel'
+      }).catch(err => err)
+      // 如果用户确认删除，返回值为字符串 confirm
+      // 如果用户取消删除，返回值为字符串 cancel
+      if (confirmResult !== 'confirm') return this.$message.info('已取消了删除')
+      const { data: res } = await request({
+        url: `/del/${id}`,
+        method: "get",
+      });
+      if (res.meta.code !== 200) return this.$message.error(res.meta.msg)
+      this.$message.success(res.meta.msg)
+      this.getUserList()
+    },
+    // 显示分配权限
+    async changeRoleById(data) {
+      // 发送验证用户权限的请求
+      const { data: vaild } = await request({
+        url: `/verify/${data.id}`,
+        method: 'get',
+      });
+      // 权限不够或者是当前用户
+      if (vaild.meta.code !== 200) return this.$message.error(vaild.meta.msg)
+      this.changeRoleForm = data
+      this.resetRole = data.rid
+      this.changeRoleDialog = true
+    },
+    // 分配权限
+    async changeRid() {
+      this.changeRoleForm.rid = this.currentRole
+      const { data: res } = await request({
+        url: `/role`,
+        method: "get",
+        params: this.changeRoleForm
+      });
+      if (res.meta.code !== 201) {
+        this.changeRoleDialog = false;
+        return this.$message.error(res.meta.msg);
+      }
+        this.$message.success(res.meta.msg)
+        // 重新请求数据
+        this.getUserList()
+        // 关闭弹出框
+        this.changeRoleDialog = false
     }
   }
 };

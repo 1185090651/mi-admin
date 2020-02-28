@@ -20,7 +20,10 @@ const routes = [ // 定义路由规则
       },
       {
         path: '/users', component: () => import ('@/views/Home/Users.vue') //用户列表组件
-      }
+      },
+      {
+        path: '/rights', component: () => import ('@/views/Home/Rights.vue') //用户列表组件
+      },
     ]
   }
 ]

@@ -26,10 +26,17 @@ import {
     Pagination,
     Dialog,
     Radio,
-    RadioGroup
+    RadioGroup,
+    MessageBox,
+    Loading,
+    Select,
+    Option,
+    Tag
 } from 'element-ui'
 
 Vue.prototype.$message = Message; // 将弹框组件挂载到Vue的原型对象上
+Vue.prototype.$confirm = MessageBox.confirm; // 将弹框组件挂载到Vue的原型对象上
+Vue.prototype.$loading = Loading.service; // 将加载组件挂载到Vue的原型对象上
 Vue.use(Button)
 Vue.use(Form)
 Vue.use(FormItem)
@@ -54,3 +61,6 @@ Vue.use(Pagination)
 Vue.use(Dialog)
 Vue.use(Radio)
 Vue.use(RadioGroup)
+Vue.use(Select)
+Vue.use(Option)
+Vue.use(Tag)

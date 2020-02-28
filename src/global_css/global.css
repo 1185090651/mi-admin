@@ -42,3 +42,9 @@ html, body, #app {
 .el-dialog {
   border-radius: 10px;
 }
+
+/* 弹框确认取消交换 */
+.btn-cancel {
+    float: right;
+    margin-left: 10px;
+}
