@@ -22,7 +22,13 @@ const routes = [ // 定义路由规则
         path: '/users', component: () => import ('@/views/Home/Users.vue') //用户列表组件
       },
       {
-        path: '/rights', component: () => import ('@/views/Home/Rights.vue') //用户列表组件
+        path: '/rights', component: () => import ('@/views/Home/Rights.vue') //用户权限组件
+      },
+      {
+        path: '/goodscategory', component: () => import ('@/views/Home/Category.vue') //列商品分类组件
+      },
+      {
+        path: '/goodslist', component: () => import ('@/views/Home/Goods.vue') //商品列表组件
       },
     ]
   }

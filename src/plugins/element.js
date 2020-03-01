@@ -31,7 +31,9 @@ import {
     Loading,
     Select,
     Option,
-    Tag
+    Tag,
+    Popover,
+    Cascader
 } from 'element-ui'
 
 Vue.prototype.$message = Message; // 将弹框组件挂载到Vue的原型对象上
@@ -64,3 +66,5 @@ Vue.use(RadioGroup)
 Vue.use(Select)
 Vue.use(Option)
 Vue.use(Tag)
+Vue.use(Popover)
+Vue.use(Cascader)

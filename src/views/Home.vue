@@ -6,7 +6,16 @@
                 <img src="@/assets/mi_logo.png" alt="">
                 <span>小米商城后台管理系统</span>
             </div>
-            <div class="btn" @click="logout">退出</div>
+            <el-popover
+                placement="bottom"
+                :title="profileInfo"
+                trigger="click">
+                <div slot="reference" class="profile_box" @click="showProfile">
+                    <img src="@/assets/mi_profile.jpeg" class="profile_img">
+                    <i :class="icon_flag?'el-icon-caret-bottom':'el-icon-caret-top'"></i>
+                </div>
+                <el-button @click="logout">退出</el-button>
+            </el-popover>
         </el-header>
         <!-- 页面主体区域 -->
         <el-container>
@@ -43,7 +52,6 @@
             </el-main>
         </el-container>
     </el-container>
-    
 </template>
 
 <script>
@@ -63,15 +71,34 @@ import { request } from '@/network/request'
                 },
                 // 折叠与展开
                 isCollapse: false,
+                // 用户头像的箭头的方向
+                icon_flag: true,
+                profileInfo: ''
             }
         },
         created() {
-            this.getMenuList()
+            this.getMenuList(),
+            this.getUsername()
         },
         methods: {
+            // 展示个人中心
+            showProfile() {
+                this.icon_flag = !this.icon_flag;
+            },
+            // 点击退出
             logout() {
                 window.sessionStorage.clear()
                 this.$router.push('/login')
+            },
+            // 获取用户名信息
+            async getUsername() {
+                const { data: res } = await request({
+                    url: '/getusername',
+                    method: 'get'
+                })
+                // 错误弹出提示消息
+                if (res.meta.code !== 200) return this.$message.error('获取用户信息失败')
+                this.profileInfo = `当前登录用户 : ${res.data}`
             },
             // 获取所有的菜单
             async getMenuList() {
@@ -87,7 +114,7 @@ import { request } from '@/network/request'
             toggleCollapse() {
                 this.isCollapse = ! this.isCollapse
             }
-        },
+        }
     }
 </script>
 
@@ -109,10 +136,16 @@ import { request } from '@/network/request'
                 padding-right: 40px;
             }
         }
-        .btn {
+        .profile_box {
             cursor: pointer;
+            display: flex;
+            align-items: center;
             color: #fff;
-        }
+            .profile_img {
+            width: 30px;
+            height: 30px;
+            }
+        } 
     }
     .el-container {
         .el-aside {
