@@ -15,7 +15,7 @@
     font-size: 50px;
     font-family: "Arial","Microsoft YaHei","黑体","宋体",sans-serif;
     color: #ff6700;
-    line-height: 500px;
+    line-height: 600px;
     text-align: center;
 }
 </style>
