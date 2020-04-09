@@ -9,6 +9,7 @@ import './assets/icons/iconfont.css' // 引入图标库
 import './filters/formatRole' // 引入角色过滤器
 import './filters/formatTime' // 引入时间过滤器
 import treeTable from 'vue-table-with-tree-grid' // 引入分级表格组件
+import 'animate.css'
 
 Vue.config.productionTip = false
 

@@ -22,7 +22,7 @@
       </el-row>
 
       <!-- 表格区域 -->
-      <el-table :data="goodsList" border stripe>
+      <el-table :data="goodsList" border stripe height="473">
         <el-table-column label="#" type="index"></el-table-column>
         <el-table-column label="商品ID" prop="product_id"></el-table-column>
         <el-table-column label="商品名称" prop="detail_name"></el-table-column>
@@ -57,7 +57,7 @@
         @size-change="handleSizeChange"
         @current-change="handleCurrentChange"
         :current-page="queryInfo.pagenum"
-        :page-sizes="[5, 10, 50, 100]"
+        :page-sizes="[8, 20, 30, 50]"
         :page-size="queryInfo.pagesize"
         layout="total, sizes, prev, pager, next, jumper"
         :total="total"
@@ -77,7 +77,7 @@ export default {
       // 分页查询
       queryInfo: {
         pagenum: 1,
-        pagesize: 5
+        pagesize: 8
       },
       // 数据总条数
       total: 0

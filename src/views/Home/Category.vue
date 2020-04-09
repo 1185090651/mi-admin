@@ -26,6 +26,7 @@
         border
         :show-row-hover="false"
         stripe
+        max-height="520"
       >
         <template slot="isok" slot-scope="scope">
           <i class="el-icon-success" v-if="scope.row.flag === 1" style="color: rgb(32, 178, 170);"></i>
@@ -58,7 +59,7 @@
         @size-change="handleSizeChange"
         @current-change="handleCurrentChange"
         :current-page="queryInfo.pagenum"
-        :page-sizes="[5, 8, 10, 12]"
+        :page-sizes="[8, 10, 12, 16]"
         :page-size="queryInfo.pagesize"
         layout="total, sizes, prev, pager, next, jumper"
         :total="total"
@@ -130,7 +131,7 @@ export default {
       // 分页查询
       queryInfo: {
         pagenum: 1,
-        pagesize: 5
+        pagesize: 8
       },
       // 总数据条数
       total: 0,

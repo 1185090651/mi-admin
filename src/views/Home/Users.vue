@@ -29,7 +29,7 @@
       </el-row>
 
       <!-- 用户列表区域 -->
-      <el-table :data="userList" border stripe>
+      <el-table :data="userList" border stripe height="473">
         <el-table-column label="#" type="index"></el-table-column>
         <el-table-column label="用户名" prop="username"></el-table-column>
         <el-table-column label="邮箱" prop="email"></el-table-column>
@@ -61,7 +61,7 @@
         @size-change="handleSizeChange"
         @current-change="handleCurrentChange"
         :current-page="queryInfo.pagenum"
-        :page-sizes="[4, 6, 8, 10]"
+        :page-sizes="[8, 10, 12, 16]"
         :page-size="queryInfo.pagesize"
         layout="total, sizes, prev, pager, next, jumper"
         :total="total"
@@ -182,7 +182,7 @@ export default {
       queryInfo: {
         query: '',
         pagenum: 1,
-        pagesize: 4
+        pagesize: 8
       },
       // 用户列表数据
       userList: [],

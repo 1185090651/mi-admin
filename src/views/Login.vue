@@ -1,6 +1,6 @@
 <template>
     <div class="login_container">
-        <div class="login_box">
+        <div class="animated bounceInDown login_box">
             <!-- 头像区域 -->
             <div class="avatar_box">
                 <img src="@/assets/mi_logo.png" alt="">
@@ -92,17 +92,16 @@ import { request } from '@/network/request';
 <style lang="scss" scoped>
 .login_container {
     height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     background-color: #ff6700;
     .login_box {
-        width: 450px;
+        width: 400px;
         height: 300px;
         background-color: #fff;
         border-radius: 30px;
-        position: absolute;
-        // 盒子居中定位
-        left: 50%;
-        top: 50%;
-        transform: translate(-50%, -50%);
+        box-shadow: -4px 5px 10px rgba(0, 0, 0, 0.4);
         .avatar_box {
             height: 130px;
             width: 130px;

@@ -33,7 +33,11 @@ import {
     Option,
     Tag,
     Popover,
-    Cascader
+    Cascader,
+    Dropdown,
+    DropdownItem,
+    Avatar,
+    DropdownMenu
 } from 'element-ui'
 
 Vue.prototype.$message = Message; // 将弹框组件挂载到Vue的原型对象上
@@ -68,3 +72,7 @@ Vue.use(Option)
 Vue.use(Tag)
 Vue.use(Popover)
 Vue.use(Cascader)
+Vue.use(Dropdown)
+Vue.use(DropdownItem)
+Vue.use(Avatar)
+Vue.use(DropdownMenu)

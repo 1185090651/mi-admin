@@ -1,6 +1,6 @@
 <template>
     <div class="welcome">
-        <span>欢迎光临小米商城后台管理系统！</span>
+        <span>因为技术，所以热爱</span>
     </div>
 </template>
 
@@ -12,10 +12,12 @@
 
 <style lang="scss" scoped>
 .welcome {
+    height: 100%;
     font-size: 50px;
-    font-family: "Arial","Microsoft YaHei","黑体","宋体",sans-serif;
-    color: #ff6700;
+    // color: #ff6700;
+    font-family: 'STXingkai';
     line-height: 600px;
     text-align: center;
+    
 }
 </style>
